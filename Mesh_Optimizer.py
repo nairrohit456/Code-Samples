@@ -119,7 +119,7 @@ class MeshOptimizerWindow(QMainWindow):
         with open(json_file_path, 'w') as json_file:
             json.dump(data, json_file, indent=4)            
                 
-    #nitiates the final optimization process for meshes, 
+    #Initiates the final optimization process for meshes, 
     #including renaming and saving the optimized file   
     def Final_Optimize(self):
         mesh_group_name = self.get_mesh_group_name()
