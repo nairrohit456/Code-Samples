@@ -15,6 +15,7 @@ import json
 import pymel.core as pm
 from maya import cmds
 import maya.OpenMayaUI as omui
+from shiboken2 import wrapInstance
 import os
 from P4 import P4
 
