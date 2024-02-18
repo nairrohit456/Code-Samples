@@ -121,10 +121,6 @@ class PipeRiggerWindow(QMainWindow):
 
         #Create a curve passing through centroids
         curve = pm.curve(d=1, p=[(c.x, c.y, c.z) for c in centroids])
-
-        #Delete a specific CV of curves
-        delete_specific_control_vertices_of_curves()
-
         return curve
         
     #Function to delete certain curve control vertex
@@ -241,6 +237,7 @@ class PipeRiggerWindow(QMainWindow):
             curve = create_curve_through_centroids_and_delete_cv(mesh, num_subdivisions)
             if curve:
                 print("Curve created successfully.")
+            delete_specific_control_vertices_of_curves()
 
     #Method to create joints and bind
     def create_joints_and_bind(self):
