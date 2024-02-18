@@ -84,7 +84,7 @@ class PipeRiggerWindow(QMainWindow):
         self.layout.addWidget(self.animate_button)
         
     #Function to create a curve through centroids 
-    #and delete CV
+    #and delete Control vertices
     def create_curve_through_centroids_and_delete_cv(mesh, num_subdivisions):
         #Function to get the positions of vertices 
         #of the given mesh
