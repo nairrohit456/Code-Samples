@@ -9,6 +9,7 @@
 import maya.OpenMaya as OpenMaya
 import pymel.core as pm
 import maya.cmds as cmds
+import maya.OpenMayaUI as omui
 from PyQt5.QtWidgets import QApplication, \
                             QMainWindow, \
                             QVBoxLayout, \
@@ -84,8 +85,8 @@ class PipeRiggerWindow(QMainWindow):
         self.layout.addWidget(self.animate_button)
         
     #Function to create a curve through centroids 
-    #and delete Control vertices
-    def create_curve_through_centroids_and_delete_cv(mesh, num_subdivisions):
+    #and delete CV
+    def create_curve_through_centroids_and_delete_cv(self, mesh, num_subdivisions):
         #Function to get the positions of vertices 
         #of the given mesh
         def get_vertex_positions(mesh):
@@ -121,6 +122,10 @@ class PipeRiggerWindow(QMainWindow):
 
         #Create a curve passing through centroids
         curve = pm.curve(d=1, p=[(c.x, c.y, c.z) for c in centroids])
+
+        #Delete a specific CV of curves
+        delete_specific_control_vertices_of_curves()
+
         return curve
         
     #Function to delete certain curve control vertex
@@ -134,7 +139,7 @@ class PipeRiggerWindow(QMainWindow):
         pm.delete()
         
     #Function to create joint chain on curve
-    def create_joint_chain_on_curve(curve, num_joints):
+    def create_joint_chain_on_curve(self, curve, num_joints):
         #Function to get curve length
         def get_curve_length(curve):
             curve_cvs = curve.getCVs(space='world')
@@ -171,7 +176,7 @@ class PipeRiggerWindow(QMainWindow):
         pm.select(joint_chain[0])
 
     #Function to reroot joint chain
-    def reroot_joint_chain():
+    def reroot_joint_chain(self):
         joints = pm.ls(type='joint')
         if joints:
             last_joint = joints[-1]
@@ -181,7 +186,7 @@ class PipeRiggerWindow(QMainWindow):
         mel.eval("RerootSkeleton;")
 
     #Function to create skin cluster
-    def create_skin_cluster():
+    def create_skin_cluster(self):
         meshes = pm.ls(tr=True, type='mesh')
         if not meshes:
             print("No meshes found.")
@@ -233,19 +238,18 @@ class PipeRiggerWindow(QMainWindow):
             pm.warning("Please select a mesh.")
         else:
             mesh = selected_objects[0]
-            num_subdivisions = self.update_label  # You can adjust this value as needed
-            curve = create_curve_through_centroids_and_delete_cv(mesh, num_subdivisions)
+            num_subdivisions = int(self.subdivisions_menu.currentText()) 
+            curve = self.create_curve_through_centroids_and_delete_cv(mesh, num_subdivisions)
             if curve:
                 print("Curve created successfully.")
-            delete_specific_control_vertices_of_curves()
 
     #Method to create joints and bind
     def create_joints_and_bind(self):
         curve = pm.ls(selection=True)[0]
-        num_joints = self.update_label
-        create_joint_chain_on_curve(curve, num_joints)
-        reroot_joint_chain()
-        create_skin_cluster()
+        num_joints = int(self.joints_menu.currentText())
+        self.create_joint_chain_on_curve(curve, num_joints)
+        self.reroot_joint_chain()
+        self.create_skin_cluster()
 
     #Method to perform final animation
     def final_animation(self):
