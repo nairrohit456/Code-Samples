@@ -10,6 +10,7 @@ import maya.OpenMaya as OpenMaya
 import pymel.core as pm
 import maya.cmds as cmds
 import maya.OpenMayaUI as omui
+from shiboken2 import wrapInstance
 from PyQt5.QtWidgets import QApplication, \
                             QMainWindow, \
                             QVBoxLayout, \
