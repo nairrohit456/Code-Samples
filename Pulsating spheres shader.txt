@@ -1,0 +1,45 @@
+float circle(vec2 uv, vec2 pos, float r, float blur) {
+    float d = length(pos - uv);
+    float cm = smoothstep(r, r - blur, d);
+    return cm;
+}
+
+void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    // Get normalized pixel coordinates
+    vec2 uv = fragCoord.xy / iResolution.xy;
+    
+    // Correct aspect ratio 
+    float ar = iResolution.x / iResolution.y;
+    uv.x *= ar;
+
+    // Time based dynamic color 
+    float timeShift = iTime * 0.2;
+    vec3 col = vec3(0.0);
+
+    // Parameters for circles
+    float blurAmount = 0.005;
+    float radius = 0.08 + 0.05 * sin(iTime * 2.0);
+    
+    // Center point for all circles
+    vec2 center = vec2(0.5 * ar, 0.5);
+    
+    // Generate multiple circles with varying positions and colors
+    for (int i = 0; i < 10; i++) {
+        // Evenly spaced around the center
+        float angle = timeShift + float(i) * (2.0 * 3.14159 / 10.0); 
+        // Offset from center
+        vec2 pos = center + 0.3 * vec2(cos(angle), sin(angle)); 
+        vec3 circleColor = vec3(
+            0.5 + 0.5 * sin(angle * 2.0 + iTime * 1.5),
+            0.5 + 0.5 * cos(angle * 3.0 + iTime * 1.7),
+            0.5 + 0.5 * sin(angle * 4.0 + iTime * 1.9)
+        );
+        col += circle(uv, pos, radius, blurAmount) * circleColor;
+    }
+    
+    // Add a dynamic background gradient
+    col += 0.2 * vec3(uv.x, uv.y, 1.0 - uv.x);
+    
+    // Final output
+    fragColor = vec4(col, 1.0);
+}

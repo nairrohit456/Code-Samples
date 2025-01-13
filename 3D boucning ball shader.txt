@@ -1,0 +1,57 @@
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 p = fragCoord.xy / iResolution.xy;
+    float aspect_ratio = iResolution.y / iResolution.x;
+    
+    // Time for animation
+    float time = iTime;
+
+    // Vertical bouncing parameters
+    float bounceHeight = 0.43 * abs(sin(time * 2.0));  // Vertical bounce effect
+    float verticalCenter = 0.000005 * aspect_ratio + 0.05 + bounceHeight;  // Vertical position
+    
+    // Horizontal bouncing parameters
+    float horizontalSpeed = 0.5;  // Speed of horizontal motion
+    float horizontalCenter = 0.5 + 0.4 * sin(time * horizontalSpeed);  // Horizontal motion that bounces between 0.1 and 0.9
+
+    vec2 center = vec2(horizontalCenter, verticalCenter);  // Combined horizontal and vertical positions
+    float radius = 0.12 * aspect_ratio;
+    
+    // Calculate the distance from the current fragment to the sphere's center
+    float val = (p.x - center.x) * (p.x - center.x) + (p.y * aspect_ratio - center.y) * (p.y * aspect_ratio - center.y);
+    
+    // Sphere color
+    vec3 sphereColor = vec3(0.1, 0.7, 0.9);  // Light blue
+    
+    // Lighting setup
+    vec3 lightPos = vec3(0.5, 0.5, 1.0);  // Light source position
+    vec3 lightColor = vec3(1.0, 1.0, 1.0); // White light
+
+    if (val < radius * radius)
+    {
+        // Calculate the normal at the surface of the sphere
+        vec3 sphereNormal = normalize(vec3(p.x - center.x, p.y * aspect_ratio - center.y, sqrt(radius * radius - val)));
+        
+        // Calculate direction from the sphere surface to the light source
+        vec3 lightDir = normalize(lightPos - vec3(p.x, p.y * aspect_ratio, 0.0));
+        
+        // Diffuse lighting based on the angle of the surface to the light
+        float diff = max(dot(sphereNormal, lightDir), 0.0);
+        
+        // Combine color and lighting
+        vec3 color = sphereColor * lightColor * diff;  // Apply the diffuse lighting
+        
+        fragColor = vec4(color, 1.0);
+    }
+    else
+    {
+        // Create a gradient background from light green to dark green
+        vec3 topColor = vec3(0.3, 0.8, 0.3);   // Lighter green at the top
+        vec3 bottomColor = vec3(0.0, 0.5, 0.0); // Darker green at the bottom
+        
+        // Interpolate between top and bottom colors based on the vertical position
+        vec3 bgColor = mix(topColor, bottomColor, p.y);
+        
+        fragColor = vec4(bgColor, 1.0);  // Apply the gradient background
+    }
+}
